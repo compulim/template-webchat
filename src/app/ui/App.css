@@ -1,5 +1,24 @@
-.app {
-  display: flex;
+body, html {
+  background-color: #EEE;
   height: 100%;
-  width: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  height: 100%;
+}
+
+.app__pane {
+  overflow: hidden;
 }

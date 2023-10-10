@@ -1,32 +1,24 @@
 import './App.css';
 
-import { memo, useEffect, useState } from 'react';
+import { memo, useMemo } from 'react';
 
+import ActivityInput from './ActivityInput';
+import onErrorResumeNext from '../utils/onErrorResumeNext';
+import useAppReducer from '../data/useAppReducer';
 import WebChat from './WebChat';
 
 export default memo(function App() {
-  const [token, setToken] = useState<string>();
+  const [{ activityJSON }, { setActivityJSON }] = useAppReducer();
+  const activity = useMemo(() => onErrorResumeNext(() => JSON.parse(activityJSON)), [activityJSON]);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    (async function () {
-      const res = await fetch('https://webchat-mockbot.azurewebsites.net/directline/token', {
-        method: 'POST',
-        signal: abortController.signal
-      });
-
-      if (!res.ok) {
-        return console.error(`Server returned ${res.status} while fetching Direct Line token.`);
-      }
-
-      const { token } = await res.json();
-
-      setToken(token);
-    })();
-
-    return () => abortController.abort();
-  }, []);
-
-  return <div className="app">{token ? <WebChat token={token} /> : <div>Fetching Direct Line token&hellip;</div>}</div>;
+  return (
+    <div className="app">
+      <div className="app__pane">
+        <ActivityInput onChange={setActivityJSON} value={activityJSON} />
+      </div>
+      <div className="app__pane">
+        <WebChat activity={activity} key={activityJSON} />
+      </div>
+    </div>
+  );
 });

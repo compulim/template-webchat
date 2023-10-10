@@ -17,9 +17,10 @@
     "start": "npm run build -- --servedir=./public"
   },
   "dependencies": {
-    "botframework-webchat": "^4.15.9",
+    "botframework-webchat": "^4.15.10-main.20230927.58ec6cd",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "use-ref-from": "^0.0.3"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.2",
