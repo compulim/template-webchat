@@ -8,6 +8,7 @@ export default {
       content: {
         '@context': 'https://schema.org',
         '@type': 'ReviewAction',
+        actionStatus: 'PotentialActionStatus',
         review: {
           '@type': 'Review',
           reviewAspect: 'Great! Please rate your experience.'
