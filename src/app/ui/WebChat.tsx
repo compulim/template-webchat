@@ -16,7 +16,7 @@ const { useStyleOptions } = hooks;
 // type AttachmentMiddleware = PropsOf<typeof Composer>['attachmentMiddleware'];
 
 type Props = {
-  activity: unknown;
+  activity: readonly unknown[];
 };
 
 const _Chat = memo(function () {
@@ -53,7 +53,9 @@ export default memo(function Chat({ activity }: Props) {
   const { directLine } = useMemo(() => createDirectLineEmulator({ store }), [store]);
 
   useEffect(() => {
-    activity && ready && directLine.emulateIncomingActivity(activity);
+    if (activity && ready) {
+      activity.forEach(activity => directLine.emulateIncomingActivity(activity));
+    }
   }, [activity, directLine, ready]);
 
   // Commented out for now... if we need to use activity middleware, instead of attachment middleware, here is the code.
