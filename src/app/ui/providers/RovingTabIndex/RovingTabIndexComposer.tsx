@@ -15,6 +15,10 @@ type RovingTabIndexContextProps = PropsWithChildren<{
   orientation?: 'horizontal' | 'vertical';
 }>;
 
+function isDisabled(element: HTMLElement) {
+  return element.ariaDisabled === 'true' || element.hasAttribute('disabled');
+}
+
 const RovingTabIndexComposer = ({ children, onEscapeKey, orientation }: RovingTabIndexContextProps) => {
   const activeItemIndexRef = useRef(0);
   const itemRefsRef = useRef<ItemRef[]>([]);
@@ -23,7 +27,7 @@ const RovingTabIndexComposer = ({ children, onEscapeKey, orientation }: RovingTa
     const { current: activeItemIndex } = activeItemIndexRef;
 
     itemRefsRef.current.forEach(({ current }, index) => {
-      current?.setAttribute('tabindex', activeItemIndex === index ? '0' : '-1');
+      current?.setAttribute('tabindex', activeItemIndex === index && !isDisabled(current) ? '0' : '-1');
     });
   }, [activeItemIndexRef]);
 
@@ -153,7 +157,7 @@ const RovingTabIndexComposer = ({ children, onEscapeKey, orientation }: RovingTa
       current?.addEventListener('focus', handleFocus);
       current?.addEventListener('keydown', handleKeyDown);
 
-      current?.setAttribute('tabindex', activeItemIndexRef.current === index ? '0' : '-1');
+      current?.setAttribute('tabindex', activeItemIndexRef.current === index && !isDisabled(current) ? '0' : '-1');
 
       return () => {
         current?.removeEventListener('focus', handleFocus);
