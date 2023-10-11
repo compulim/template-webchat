@@ -4,7 +4,6 @@ export default {
   type: 'message',
   attachments: [
     {
-      type: 'https://schema.org/ReviewAction',
       content: {
         '@context': 'https://schema.org',
         '@type': 'ReviewAction',
@@ -24,7 +23,8 @@ export default {
             'ratingValue-input': 'required'
           }
         }
-      }
+      },
+      contentType: 'https://schema.org/ReviewAction'
     }
   ]
 };
