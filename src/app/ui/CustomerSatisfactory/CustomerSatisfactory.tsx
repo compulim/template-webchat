@@ -127,14 +127,16 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
         tabIndex={submitDisabled ? -1 : undefined}
         type="submit"
       >
-        {submitted ? (
-          <Fragment>
-            <Checkmark />
-            Submitted
-          </Fragment>
-        ) : (
-          'Submit'
-        )}
+        <span className="webchat__customer-satisfactory__submit-button-text">
+          {submitted ? (
+            <Fragment>
+              <Checkmark />
+              Submitted
+            </Fragment>
+          ) : (
+            'Submit'
+          )}
+        </span>
       </button>
     </form>
   );

@@ -92,12 +92,10 @@ export default css({
     borderRadius: 4,
     borderStyle: 'solid',
     borderWidth: 1,
-    display: 'flex',
     fontFamily: 'unset',
     fontSize: 'unset',
     fontWeight: 600,
-    gap: 8,
-    padding: '8px 12px',
+    padding: '5px 12px',
 
     [FORCED_COLORS_SELECTOR]: {
       borderColor: 'ButtonBorder'
@@ -110,10 +108,10 @@ export default css({
 
   '&.webchat__customer-satisfactory--submitted .webchat__customer-satisfactory__submit-button': {
     backgroundColor: 'unset',
-    border: 0,
-    color: 'unset',
+    borderColor: 'transparent',
     outline: 0,
-    padding: 0
+    paddingLeft: 0,
+    paddingRight: 0
   },
 
   '&:not(.webchat__customer-satisfactory--submitted) .webchat__customer-satisfactory__submit-button': {
@@ -127,5 +125,11 @@ export default css({
         color: '#BDBDBD'
       }
     }
+  },
+
+  '& .webchat__customer-satisfactory__submit-button-text': {
+    display: 'flex',
+    gap: 8,
+    minHeight: 20
   }
 });
