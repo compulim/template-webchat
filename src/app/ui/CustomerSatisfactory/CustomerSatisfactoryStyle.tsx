@@ -99,7 +99,8 @@ export default css({
     borderStyle: 'solid',
     borderWidth: 1,
     fontFamily: 'unset',
-    fontSize: 'unset',
+    fontSize: 14,
+    // fontSize: 'unset',
     fontWeight: 600,
     padding: '5px 12px',
 
