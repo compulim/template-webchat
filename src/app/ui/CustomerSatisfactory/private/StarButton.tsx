@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { ReactEventHandler, useCallback } from 'react';
 import { useRefFrom } from 'use-ref-from';
 import classNames from 'classnames';
 
@@ -15,11 +15,19 @@ type Props = {
 };
 
 const StarButton = ({ checked, className, disabled, onClick, rating }: Props) => {
+  const disabledRef = useRefFrom(disabled);
   const onClickRef = useRefFrom(onClick);
   const ratingRef = useRefFrom(rating);
   const ref = useItemRef<HTMLButtonElement>(rating - 1);
 
-  const handleClickAndFocus = useCallback(() => onClickRef.current?.(ratingRef.current), [onClickRef, ratingRef]);
+  const handleClickAndFocus = useCallback<ReactEventHandler>(
+    event => {
+      event.preventDefault();
+
+      disabledRef.current || onClickRef.current?.(ratingRef.current);
+    },
+    [disabledRef, onClickRef, ratingRef]
+  );
 
   return (
     <button
@@ -27,9 +35,8 @@ const StarButton = ({ checked, className, disabled, onClick, rating }: Props) =>
       aria-label={`${rating} stars`}
       aria-checked={checked}
       className={classNames(className, 'webchat__customer-satisfactory__star-button')}
-      disabled={disabled}
-      onClick={disabled ? undefined : handleClickAndFocus}
-      onFocus={disabled ? undefined : handleClickAndFocus}
+      onClick={handleClickAndFocus}
+      onFocus={handleClickAndFocus}
       ref={ref}
       role="radio"
       tabIndex={disabled ? -1 : undefined}
