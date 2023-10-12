@@ -87,6 +87,10 @@ export default css({
     }
   },
 
+  '&:not(.webchat__customer-satisfactory--submitted) .webchat__customer-satisfactory__star-button': {
+    cursor: 'pointer'
+  },
+
   '& .webchat__customer-satisfactory__rating-value': {
     alignSelf: 'center',
     marginLeft: 4
