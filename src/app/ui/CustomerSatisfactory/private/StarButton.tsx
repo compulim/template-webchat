@@ -7,33 +7,35 @@ import StarFilled from './StarFilled';
 import useItemRef from '../../providers/RovingTabIndex/useItemRef';
 
 type Props = {
+  checked?: boolean | undefined;
   className?: boolean | undefined;
   disabled?: boolean | undefined;
   onClick?: (index: 1 | 2 | 3 | 4 | 5) => void;
-  pressed?: boolean | undefined;
   rating: 1 | 2 | 3 | 4 | 5;
 };
 
-const StarButton = ({ className, disabled, onClick, pressed, rating }: Props) => {
+const StarButton = ({ checked, className, disabled, onClick, rating }: Props) => {
   const onClickRef = useRefFrom(onClick);
   const ratingRef = useRefFrom(rating);
   const ref = useItemRef<HTMLButtonElement>(rating - 1);
 
-  const handleClick = useCallback(() => onClickRef.current?.(ratingRef.current), [onClickRef, ratingRef]);
+  const handleClickAndFocus = useCallback(() => onClickRef.current?.(ratingRef.current), [onClickRef, ratingRef]);
 
   return (
     <button
       aria-disabled={disabled}
       aria-label={`${rating} stars`}
-      aria-pressed={pressed}
+      aria-checked={checked}
       className={classNames(className, 'webchat__customer-satisfactory__star-button')}
       disabled={disabled}
-      onClick={disabled ? undefined : handleClick}
+      onClick={disabled ? undefined : handleClickAndFocus}
+      onFocus={disabled ? undefined : handleClickAndFocus}
       ref={ref}
+      role="radio"
       tabIndex={disabled ? -1 : undefined}
       type="button"
     >
-      {pressed ? <StarFilled /> : <Star />}
+      {checked ? <StarFilled /> : <Star />}
     </button>
   );
 };
