@@ -11,7 +11,7 @@ import StarBar from './private/StarBar';
 import useUniqueId from './private/useUniqueId';
 import Checkmark from './private/Checkmark';
 
-const { useFocus } = hooks;
+const { useFocus, useSendMessage, useSendMessageBack, useSendPostBack } = hooks;
 
 declare global {
   interface URLSearchParams {
@@ -46,6 +46,9 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
   const [submitted, setSubmitted] = useState(false);
   const focus = useFocus();
   const labelId = useUniqueId('webchat__customer-satisfactory');
+  const sendMessage = useSendMessage();
+  const sendMessageBack = useSendMessageBack();
+  const sendPostBack = useSendPostBack();
 
   // TODO: We should use HTML Form Validation.
   const submitDisabled = typeof rating !== 'number' || submitted;
@@ -60,24 +63,41 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
         return;
       }
 
-      const { result, target } = reviewAction;
-      const reviewResult = result && {
-        ...result,
-        reviewRating: {
-          ...result.reviewRating,
-          ratingValue: ratingRef.current as number,
-          'ratingValue-input': undefined
+      try {
+        const { result, target } = reviewAction;
+        const reviewResult = result && {
+          ...result,
+          reviewRating: {
+            ...result.reviewRating,
+            ratingValue: ratingRef.current as number,
+            'ratingValue-input': undefined
+          }
+        };
+
+        if (reviewResult && target) {
+          const url = new URL(parseTemplate(target.urlTemplate).expand({ reviewRating: ratingRef.current as number }));
+          const { protocol, searchParams } = new URL(url);
+
+          if (protocol === 'ms-direct-line-imback:') {
+            const value = searchParams.get('value');
+
+            value && sendMessage(value);
+          } else if (protocol === 'ms-direct-line-messageback:') {
+            const value = searchParams.has('value') && JSON.parse(searchParams.get('value') || '{}');
+
+            sendMessageBack(value, searchParams.get('text') || undefined, searchParams.get('displayText') || undefined);
+          } else if (protocol === 'ms-direct-line-postback:') {
+            const rawValue = searchParams.get('value');
+
+            if (rawValue) {
+              // This is not conform to Bot Framework Direct Line specification.
+              // However, this is what PVA is currently using.
+              sendPostBack(target.contentType === 'application/json' ? JSON.parse(rawValue) : rawValue);
+            }
+          }
         }
-      };
-
-      if (reviewResult && target) {
-        const url = new URL(parseTemplate(target.urlTemplate).expand({ reviewRating: ratingRef.current as number }));
-
-        if (url.protocol === 'ms-direct-line-postback:') {
-          const json = Object.fromEntries(Array.from(new URL(url).searchParams.entries()));
-
-          console.log('SUBMIT!', { json, url });
-        }
+      } catch (error) {
+        console.error('botframework-webchat: Failed to send review action.', { error });
       }
 
       setSubmitted(true);

@@ -58,7 +58,7 @@ export default [
             '@type': 'EntryPoint',
             actionPlatform: 'https://directline.botframework.com',
             contentType: 'application/json',
-            urlTemplate: 'ms-direct-line-postback:?value=%7Brate%3A%22{reviewRating}%22%7D'
+            urlTemplate: 'ms-direct-line-postback:?value=%7B%22rate%22%3A%22{reviewRating}%22%7D'
           },
           result: {
             '@type': 'Review',
