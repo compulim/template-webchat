@@ -1,3 +1,4 @@
+import { hooks } from 'botframework-webchat-api';
 import { ReactEventHandler, useCallback } from 'react';
 import { useRefFrom } from 'use-ref-from';
 import classNames from 'classnames';
@@ -5,6 +6,8 @@ import classNames from 'classnames';
 import Star from './Star';
 import StarFilled from './StarFilled';
 import useItemRef from '../../providers/RovingTabIndex/useItemRef';
+
+const { useLocalizer } = hooks;
 
 type Props = {
   checked?: boolean | undefined;
@@ -20,6 +23,17 @@ const StarButton = ({ checked, className, disabled, onClick, rating }: Props) =>
   const ratingRef = useRefFrom(rating);
   const ref = useItemRef<HTMLButtonElement>(rating - 1);
 
+  const label = useLocalizer({ plural: true })(
+    {
+      few: 'CSAT_RATING_FEW',
+      many: 'CSAT_RATING_MANY',
+      one: 'CSAT_RATING_ONE',
+      other: 'CSAT_RATING_OTHER',
+      two: 'CSAT_RATING_TWO'
+    },
+    rating
+  );
+
   const handleClickAndFocus = useCallback<ReactEventHandler>(
     event => {
       event.preventDefault();
@@ -32,7 +46,7 @@ const StarButton = ({ checked, className, disabled, onClick, rating }: Props) =>
   return (
     <button
       aria-disabled={disabled}
-      aria-label={`${rating} stars`}
+      aria-label={label}
       aria-checked={checked}
       className={classNames(className, 'webchat__customer-satisfactory__star-button')}
       onClick={handleClickAndFocus}

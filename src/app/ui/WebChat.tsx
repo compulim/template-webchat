@@ -76,12 +76,38 @@ export default memo(function Chat({ activities }: Props) {
     return () => abortController.abort();
   }, [directLine]);
 
+  const overrideLocalizedStrings = {
+    CSAT_RATING_FEW_ALT: '$1 stars',
+    '_CSAT_RATING_FEW_ALT.comment':
+      'This is for customer satisfactory UI which shows 5 stars for rating. $1 is the number of stars. This is for plural rule of "few".',
+
+    CSAT_RATING_MANY_ALT: '$1 stars',
+    '_CSAT_RATING_MANY_ALT.comment':
+      'This is for customer satisfactory UI which shows 5 stars for rating. $1 is the number of stars. This is for plural rule of "many".',
+
+    CSAT_RATING_ONE_ALT: '$1 star',
+    '_CSAT_RATING_ONE_ALT.comment':
+      'This is for customer satisfactory UI which shows 5 stars for rating. $1 is the number of stars. This is for plural rule of "one".',
+
+    CSAT_RATING_OTHER_ALT: '$1 stars',
+    '_CSAT_RATING_OTHER_ALT.comment':
+      'This is for customer satisfactory UI which shows 5 stars for rating. $1 is the number of stars. This is for plural rule of "other".',
+
+    CSAT_RATING_TWO_ALT: '$1 stars',
+    '_CSAT_RATING_TWO_ALT.comment':
+      'This is for customer satisfactory UI which shows 5 stars for rating. $1 is the number of stars. This is for plural rule of "two".',
+
+    CSAT_SUBMIT_BUTTON_TEXT: 'Submit',
+    CSAT_SUBMITTED_TEXT: 'Submitted'
+  };
+
   return (
     <div className="chat">
       <Composer
         attachmentMiddleware={customerSatisfactoryMiddleware}
         attachmentForScreenReaderMiddleware={customerSatisfactoryForScreenReaderMiddleware}
         directLine={directLine}
+        overrideLocalizedStrings={overrideLocalizedStrings}
         store={store}
       >
         <_Chat />

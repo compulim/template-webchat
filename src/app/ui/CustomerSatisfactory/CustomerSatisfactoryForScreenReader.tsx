@@ -1,4 +1,8 @@
+import { hooks } from 'botframework-webchat-api';
+
 import useUniqueId from './private/useUniqueId';
+
+const { useLocalizer } = hooks;
 
 declare global {
   interface URLSearchParams {
@@ -28,20 +32,30 @@ type Props = {
   };
 };
 
+const RATING_PLURAL_IDS = {
+  few: 'CSAT_RATING_FEW',
+  many: 'CSAT_RATING_MANY',
+  one: 'CSAT_RATING_ONE',
+  other: 'CSAT_RATING_OTHER',
+  two: 'CSAT_RATING_TWO'
+};
+
 const CustomerSatisfactoryForScreenReader = ({ reviewAction }: Props) => {
   const labelId = useUniqueId('webchat__customer-satisfactory');
+  const localize = useLocalizer();
+  const localizePlural = useLocalizer({ plural: true });
 
   return (
     <article>
       <div aria-labelledby={labelId} role="radiogroup">
         <p id={labelId}>{reviewAction.description}</p>
-        <button aria-checked={false} aria-label="1 star" role="radio" type="button" />
-        <button aria-checked={false} aria-label="2 stars" role="radio" type="button" />
-        <button aria-checked={false} aria-label="3 stars" role="radio" type="button" />
-        <button aria-checked={false} aria-label="4 stars" role="radio" type="button" />
-        <button aria-checked={false} aria-label="5 stars" role="radio" type="button" />
+        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 1)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 2)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 3)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 4)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 5)} role="radio" type="button" />
       </div>
-      <input type="submit" value="Submit" />
+      <input type="submit" value={localize('CSAT_SUBMIT_BUTTON_TEXT')} />
     </article>
   );
 };
