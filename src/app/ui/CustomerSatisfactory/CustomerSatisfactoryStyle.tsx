@@ -18,7 +18,13 @@ export default css({
     padding: '10px 12px'
   },
 
-  '& .webchat__customer-satisfactory__body': {
+  '& .webchat__customer-satisfactory__radio-group': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8
+  },
+
+  '& .webchat__customer-satisfactory__label': {
     margin: 0
   },
 

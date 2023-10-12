@@ -87,11 +87,15 @@ export default function createDirectLineEmulator({ autoConnect = true, store } =
     };
 
     const rejectPostActivity = error => returnPostActivityDeferred.reject(error);
-    const resolvePostActivity = () => returnPostActivityDeferred.resolve(id);
+    const resolvePostActivity = () => {
+      returnPostActivityDeferred.resolve(id);
+
+      return echoBackActivity;
+    };
 
     const resolveAll = async updater => {
       await echoBack(updater);
-      resolvePostActivity();
+      return resolvePostActivity();
     };
 
     return { activity: outgoingActivity, echoBack, rejectPostActivity, resolveAll, resolvePostActivity };

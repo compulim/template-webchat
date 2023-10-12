@@ -115,12 +115,14 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
       )}
       onSubmit={handleSubmit}
     >
-      <p className="webchat__customer-satisfactory__body" id={labelId}>
-        {reviewAction.description}
-      </p>
-      <RovingTabIndexComposer>
-        <StarBar aria-labelledby={labelId} disabled={submitted} onChange={setRating} rating={rating} />
-      </RovingTabIndexComposer>
+      <div aria-labelledby={labelId} className="webchat__customer-satisfactory__radio-group" role="radiogroup">
+        <p className="webchat__customer-satisfactory__label" id={labelId}>
+          {reviewAction.description}
+        </p>
+        <RovingTabIndexComposer>
+          <StarBar disabled={submitted} onChange={setRating} rating={rating} />
+        </RovingTabIndexComposer>
+      </div>
       <button
         aria-disabled={submitDisabled}
         className="webchat__customer-satisfactory__submit-button"

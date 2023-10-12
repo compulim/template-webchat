@@ -51,11 +51,34 @@ export default memo(function Chat({ activities }: Props) {
     activities && ready && activities.forEach(activity => directLine.emulateIncomingActivity(activity));
   }, [activities, directLine, ready]);
 
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    (async function () {
+      const { signal } = abortController;
+
+      for (; !signal.aborted; ) {
+        const { resolveAll } = await directLine.actPostActivity(() => {});
+
+        if (signal.aborted) {
+          break;
+        }
+
+        const echoBackActivity = await resolveAll();
+
+        await directLine.emulateIncomingActivity({
+          ...(activities[activities.length - 1] || {}),
+          replyToID: echoBackActivity.id
+        });
+      }
+    })();
+
+    return () => abortController.abort();
+  }, [directLine]);
+
   return (
     <div className="chat">
       <Composer
-        // activityMiddleware={activityMiddleware}
-        // activityStatusMiddleware={activityStatusMiddleware}
         attachmentMiddleware={customerSatisfactoryMiddleware}
         attachmentForScreenReaderMiddleware={customerSatisfactoryForScreenReaderMiddleware}
         directLine={directLine}

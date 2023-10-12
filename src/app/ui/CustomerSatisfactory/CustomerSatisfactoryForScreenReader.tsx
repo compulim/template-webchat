@@ -33,25 +33,15 @@ const CustomerSatisfactoryForScreenReader = ({ reviewAction }: Props) => {
 
   return (
     <article>
-      <p id={labelId} role="radiogroup">
-        {reviewAction.description}
-        <button role="radio" type="button">
-          1 star
-        </button>
-        <button role="radio" type="button">
-          2 stars
-        </button>
-        <button role="radio" type="button">
-          3 stars
-        </button>
-        <button role="radio" type="button">
-          4 stars
-        </button>
-        <button role="radio" type="button">
-          5 stars
-        </button>
-        <input type="submit" value="Submit" />
-      </p>
+      <div aria-labelledby={labelId} role="radiogroup">
+        <p id={labelId}>{reviewAction.description}</p>
+        <button aria-checked={false} aria-label="1 star" role="radio" type="button" />
+        <button aria-checked={false} aria-label="2 stars" role="radio" type="button" />
+        <button aria-checked={false} aria-label="3 stars" role="radio" type="button" />
+        <button aria-checked={false} aria-label="4 stars" role="radio" type="button" />
+        <button aria-checked={false} aria-label="5 stars" role="radio" type="button" />
+      </div>
+      <input type="submit" value="Submit" />
     </article>
   );
 };

@@ -5,14 +5,13 @@ import classNames from 'classnames';
 import StarButton from './StarButton';
 
 type Props = {
-  'aria-labelledby'?: string;
   className?: string | undefined;
   disabled?: boolean | undefined;
   onChange?: (value: 1 | 2 | 3 | 4 | 5) => void;
   rating?: 1 | 2 | 3 | 4 | 5 | undefined;
 };
 
-const StarBar = ({ 'aria-labelledby': ariaLabelledBy, className, disabled, onChange, rating }: Props) => {
+const StarBar = ({ className, disabled, onChange, rating }: Props) => {
   const onChangeRef = useRefFrom(onChange);
 
   const handleStarButtonClick = useCallback(
@@ -21,11 +20,7 @@ const StarBar = ({ 'aria-labelledby': ariaLabelledBy, className, disabled, onCha
   );
 
   return (
-    <div
-      aria-labelledby={ariaLabelledBy}
-      className={classNames(className, 'webchat__customer-satisfactory__star-bar')}
-      role="radiogroup"
-    >
+    <div className={classNames(className, 'webchat__customer-satisfactory__star-bar')}>
       <StarButton checked={rating && rating >= 1} disabled={disabled} onClick={handleStarButtonClick} rating={1} />
       <StarButton checked={rating && rating >= 2} disabled={disabled} onClick={handleStarButtonClick} rating={2} />
       <StarButton checked={rating && rating >= 3} disabled={disabled} onClick={handleStarButtonClick} rating={3} />
