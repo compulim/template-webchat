@@ -27,6 +27,7 @@ const StarButton = ({ className, disabled, onClick, pressed, rating }: Props) =>
       aria-label={`${rating} stars`}
       aria-pressed={pressed}
       className={classNames(className, 'webchat__customer-satisfactory__star-button')}
+      disabled={disabled}
       onClick={disabled ? undefined : handleClick}
       ref={ref}
       tabIndex={disabled ? -1 : undefined}

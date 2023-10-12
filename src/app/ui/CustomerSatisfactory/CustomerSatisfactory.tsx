@@ -1,14 +1,44 @@
+import { parseTemplate } from 'url-template';
+import { type FormEventHandler, Fragment, useCallback, useState } from 'react';
+import { useStateWithRef } from 'use-state-with-ref';
 import classNames from 'classnames';
 
-import { type FormEventHandler, Fragment, useCallback, useState } from 'react';
 import CustomerSatisfactoryStyle from './CustomerSatisfactoryStyle';
 import RovingTabIndexComposer from '../providers/RovingTabIndex/RovingTabIndexComposer';
 import StarBar from './private/StarBar';
 import useUniqueId from './private/useUniqueId';
 import Checkmark from './private/Checkmark';
 
-const CustomerSatisfactory = () => {
-  const [rating, setRating] = useState<1 | 2 | 3 | 4 | 5 | undefined>(undefined);
+declare global {
+  interface URLSearchParams {
+    entries(): Iterable<[string, string]>;
+  }
+}
+
+// TODO: Add Schema.org.
+type Props = {
+  reviewAction: {
+    '@context': 'https://schema.org';
+    '@type': 'ReviewAction';
+    actionStatus: 'PotentialActionStatus';
+    description: string;
+    target?: {
+      '@type': 'EntryPoint';
+      actionPlatform: 'https://directline.botframework.com';
+      contentType: 'application/json';
+      urlTemplate: string;
+    };
+    result: {
+      '@type': 'Review';
+      reviewRating: {
+        'ratingValue-input': 'required';
+      };
+    };
+  };
+};
+
+const CustomerSatisfactory = ({ reviewAction }: Props) => {
+  const [rating, setRating, ratingRef] = useStateWithRef<1 | 2 | 3 | 4 | 5 | undefined>(undefined);
   const [submitted, setSubmitted] = useState(false);
   const labelId = useUniqueId('webchat__customer-satisfactory');
 
@@ -19,7 +49,25 @@ const CustomerSatisfactory = () => {
     event => {
       event.preventDefault();
 
-      console.log('SUBMIT!');
+      const { result, target } = reviewAction;
+      const reviewResult = result && {
+        ...result,
+        reviewRating: {
+          ...result.reviewRating,
+          ratingValue: ratingRef.current as number,
+          'ratingValue-input': undefined
+        }
+      };
+
+      if (reviewResult && target) {
+        const url = new URL(parseTemplate(target.urlTemplate).expand({ reviewRating: ratingRef.current as number }));
+
+        if (url.protocol === 'ms-direct-line-postback:') {
+          const json = Object.fromEntries(Array.from(new URL(url).searchParams.entries()));
+
+          console.log('SUBMIT!', { json, url });
+        }
+      }
 
       setSubmitted(true);
     },
@@ -36,7 +84,7 @@ const CustomerSatisfactory = () => {
       onSubmit={submitted ? undefined : handleSubmit}
     >
       <p className="webchat__customer-satisfactory__body" id={labelId}>
-        Great! Please rate your experience.
+        {reviewAction.description}
       </p>
       <RovingTabIndexComposer>
         <StarBar aria-labelledby={labelId} disabled={submitted} onChange={setRating} rating={rating} />

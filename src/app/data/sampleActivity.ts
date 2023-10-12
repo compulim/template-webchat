@@ -53,14 +53,12 @@ export default [
           '@context': 'https://schema.org',
           '@type': 'ReviewAction',
           actionStatus: 'PotentialActionStatus',
-          review: {
-            '@type': 'Review',
-            reviewAspect: 'Great! Please rate your experience.'
-          },
+          description: 'Great! Please rate your experience.',
           target: {
             '@type': 'EntryPoint',
             actionPlatform: 'https://directline.botframework.com',
-            contentType: 'application/vnd.microsoft.directline.activity;type=postback'
+            contentType: 'application/json',
+            urlTemplate: 'ms-direct-line-postback:?value=%7Brate%3A%22{reviewRating}%22%7D'
           },
           result: {
             '@type': 'Review',

@@ -5,6 +5,9 @@ const FORCED_COLORS_SELECTOR = '@media (forced-colors: active)';
 const LIGHT_THEME_SELECTOR = '@media (forced-colors: none) and (prefers-color-scheme: light)';
 const NOT_FORCED_COLORS_SELECTOR = '@media (forced-colors: none)';
 
+const DISABLED_SELECTOR = '&:disabled, &[aria-disabled="true"]';
+const NOT_DISABLED_SELECTOR = '&:not(:disabled):not([aria-disabled="true"])';
+
 export default css({
   '&.webchat__customer-satisfactory': {
     alignItems: 'flex-start',
@@ -46,16 +49,18 @@ export default css({
     padding: 0,
     width: 32,
 
-    '&:hover': {
-      [NOT_FORCED_COLORS_SELECTOR]: {
-        color: 'var(--webchat__color--accent)'
-      }
-    },
+    [NOT_DISABLED_SELECTOR]: {
+      '&:hover': {
+        [NOT_FORCED_COLORS_SELECTOR]: {
+          color: 'var(--webchat__color--accent)'
+        }
+      },
 
-    '&:active': {
-      [NOT_FORCED_COLORS_SELECTOR]: {
-        // Web Chat currently don't have an accent color for active.
-        color: 'var(--webchat__color--accent)'
+      '&:active': {
+        [NOT_FORCED_COLORS_SELECTOR]: {
+          // Web Chat currently don't have an accent color for active.
+          color: 'var(--webchat__color--accent)'
+        }
       }
     },
 
@@ -111,7 +116,7 @@ export default css({
   },
 
   '&:not(.webchat__customer-satisfactory--submitted) .webchat__customer-satisfactory__submit-button': {
-    '[aria-disabled], :disabled': {
+    [DISABLED_SELECTOR]: {
       [FORCED_COLORS_SELECTOR]: {
         color: 'GrayText'
       },
