@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import sleep from './sleep';
 
 const CHECK_INTERVAL = 100;

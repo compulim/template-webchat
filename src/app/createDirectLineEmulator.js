@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import createDeferred from 'p-defer';
 import Observable from 'core-js/features/observable';
 import random from 'math-random';

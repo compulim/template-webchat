@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import Observable from 'core-js/features/observable';
 
 export default function shareObservable(observable) {
