@@ -6,7 +6,9 @@ import { memo, useEffect, useMemo, useState } from 'react';
 
 // import ActivityWithReferences from './ActivityWithReferences';
 import createDirectLineEmulator from '../createDirectLineEmulator';
-import customerSatisfactoryMiddleware from './CustomerSatisfactory/customerSatisfactoryMiddleware';
+import customerSatisfactoryMiddleware, {
+  forScreenReader as customerSatisfactoryForScreenReaderMiddleware
+} from './CustomerSatisfactory/customerSatisfactoryMiddleware';
 
 // import { type PropsOf } from '../types/PropsOf';
 
@@ -114,6 +116,7 @@ export default memo(function Chat({ activity }: Props) {
         // activityMiddleware={activityMiddleware}
         // activityStatusMiddleware={activityStatusMiddleware}
         attachmentMiddleware={customerSatisfactoryMiddleware}
+        attachmentForScreenReaderMiddleware={customerSatisfactoryForScreenReaderMiddleware}
         directLine={directLine}
         store={store}
       >
