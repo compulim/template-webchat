@@ -112,6 +112,7 @@ export default css({
     backgroundColor: 'unset',
     border: 0,
     color: 'unset',
+    outline: 0,
     padding: 0
   },
 

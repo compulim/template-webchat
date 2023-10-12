@@ -1,5 +1,7 @@
+import { hooks } from 'botframework-webchat-component';
 import { parseTemplate } from 'url-template';
 import { type FormEventHandler, Fragment, useCallback, useState } from 'react';
+import { useRefFrom } from 'use-ref-from';
 import { useStateWithRef } from 'use-state-with-ref';
 import classNames from 'classnames';
 
@@ -8,7 +10,8 @@ import RovingTabIndexComposer from '../providers/RovingTabIndex/RovingTabIndexCo
 import StarBar from './private/StarBar';
 import useUniqueId from './private/useUniqueId';
 import Checkmark from './private/Checkmark';
-import { useRefFrom } from 'use-ref-from';
+
+const { useFocus } = hooks;
 
 declare global {
   interface URLSearchParams {
@@ -41,6 +44,7 @@ type Props = {
 const CustomerSatisfactory = ({ reviewAction }: Props) => {
   const [rating, setRating, ratingRef] = useStateWithRef<1 | 2 | 3 | 4 | 5 | undefined>(undefined);
   const [submitted, setSubmitted] = useState(false);
+  const focus = useFocus();
   const labelId = useUniqueId('webchat__customer-satisfactory');
 
   // TODO: We should use HTML Form Validation.
@@ -77,6 +81,7 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
       }
 
       setSubmitted(true);
+      focus('sendBox');
     },
     [disabledRef, setSubmitted]
   );
@@ -88,7 +93,7 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
         { 'webchat__customer-satisfactory--submitted': submitted },
         CustomerSatisfactoryStyle
       )}
-      onSubmit={submitted ? undefined : handleSubmit}
+      onSubmit={handleSubmit}
     >
       <p className="webchat__customer-satisfactory__body" id={labelId}>
         {reviewAction.description}
