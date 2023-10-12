@@ -135,6 +135,7 @@ export default css({
   },
 
   '& .webchat__customer-satisfactory__submit-button-text': {
+    alignItems: 'center',
     display: 'flex',
     gap: 8,
     minHeight: 20
