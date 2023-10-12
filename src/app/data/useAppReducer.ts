@@ -1,47 +1,42 @@
 import { useCallback, useReducer } from 'react';
 
-import sampleActivity from './sampleActivity';
+import sampleActivities from './sampleActivities';
 
-type SetActivityJSONAction = {
-  payload: { activityJSON: string };
-  type: 'SET_ACTIVITY_JSON';
+type SetActivitiesJSONAction = {
+  payload: { activitiesJSON: string };
+  type: 'SET_ACTIVITIES_JSON';
 };
 
-type Action = SetActivityJSONAction;
+type Action = SetActivitiesJSONAction;
 
 type State = {
-  activityJSON: string;
+  activitiesJSON: string;
 };
 
-type SetActivityJSONCallback = (activityJSON: string) => void;
+type SetActivitiesJSONCallback = (activitiesJSON: string) => void;
 
 const DEFAULT_STATE: State = {
-  activityJSON: JSON.stringify(sampleActivity, null, 2)
+  activitiesJSON: JSON.stringify(sampleActivities, null, 2)
 };
 
-export default function useAppReducer(): [
+export default function useAppReducer(): readonly [
   State,
-  {
-    setActivityJSON: SetActivityJSONCallback;
-  }
+  Readonly<{
+    setActivitiesJSON: SetActivitiesJSONCallback;
+  }>
 ] {
   const [state, dispatch] = useReducer((state: State, action: Action) => {
-    if (action.type === 'SET_ACTIVITY_JSON') {
-      state = { ...state, activityJSON: action.payload.activityJSON };
+    if (action.type === 'SET_ACTIVITIES_JSON') {
+      state = { ...state, activitiesJSON: action.payload.activitiesJSON };
     }
 
     return state;
   }, DEFAULT_STATE);
 
-  const setActivityJSON = useCallback<SetActivityJSONCallback>(
-    activityJSON => dispatch({ payload: { activityJSON }, type: 'SET_ACTIVITY_JSON' }),
+  const setActivitiesJSON = useCallback<SetActivitiesJSONCallback>(
+    activitiesJSON => dispatch({ payload: { activitiesJSON }, type: 'SET_ACTIVITIES_JSON' }),
     [dispatch]
   );
 
-  return [
-    state,
-    {
-      setActivityJSON
-    }
-  ];
+  return Object.freeze([state, Object.freeze({ setActivitiesJSON })] as const);
 }
