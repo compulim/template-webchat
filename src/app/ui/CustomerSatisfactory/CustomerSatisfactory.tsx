@@ -78,15 +78,15 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
           const url = new URL(parseTemplate(target.urlTemplate).expand({ reviewRating: ratingRef.current as number }));
           const { protocol, searchParams } = new URL(url);
 
-          if (protocol === 'ms-direct-line-imback:') {
-            const value = searchParams.get('value');
+          if (protocol === 'ms-directline-imback:') {
+            const text = searchParams.get('text');
 
-            value && sendMessage(value);
-          } else if (protocol === 'ms-direct-line-messageback:') {
+            text && sendMessage(text);
+          } else if (protocol === 'ms-directline-messageback:') {
             const value = searchParams.has('value') && JSON.parse(searchParams.get('value') || '{}');
 
             sendMessageBack(value, searchParams.get('text') || undefined, searchParams.get('displayText') || undefined);
-          } else if (protocol === 'ms-direct-line-postback:') {
+          } else if (protocol === 'ms-directline-postback:') {
             const rawValue = searchParams.get('value');
 
             if (rawValue) {
