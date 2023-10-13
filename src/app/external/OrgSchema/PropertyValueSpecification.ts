@@ -15,6 +15,14 @@ export type PropertyValueSpecification = Thing<'PropertyValueSpecification'> & {
   valueRequired?: boolean;
 };
 
+export type WithInput<T extends Record<string, unknown>> = {
+  [K in keyof T as K extends string ? `${K}-input` : K]: PropertyValueSpecification;
+};
+
+export type WithOutput<T extends Record<string, unknown>> = {
+  [K in keyof T as K extends string ? `${K}-output` : K]: PropertyValueSpecification;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isPropertyValueSpecification(thing: any): thing is PropertyValueSpecification {
   return isThingOf(thing, 'PropertyValueSpecification');
