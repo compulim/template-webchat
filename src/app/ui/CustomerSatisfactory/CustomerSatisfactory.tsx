@@ -13,6 +13,8 @@ import RovingTabIndexComposer from '../providers/RovingTabIndex/RovingTabIndexCo
 import StarBar from './private/StarBar';
 import useStrings from './private/useStrings';
 import useUniqueId from './private/useUniqueId';
+import { isReview } from '../../external/OrgSchema/Review';
+import { isEntryPoint } from '../../external/OrgSchema/EntryPoint';
 
 const { useFocus, useSendMessage, useSendMessageBack, useSendPostBack } = hooks;
 
@@ -58,6 +60,12 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
         // https://schema.org/docs/actions.html
         const { resultReview, target } = reviewAction;
 
+        if (!isReview(resultReview)) {
+          throw new Error('reviewAction.resultReview must be of type "Review".');
+        } else if (!(isEntryPoint(target) || target instanceof URL)) {
+          throw new Error('reviewAction.target must be URL or of type "EntryPoint".');
+        }
+
         const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
         const inputs: Map<string, boolean | number | null | string> = new Map();
 
@@ -74,12 +82,32 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
           // TODO: We could potentially move this into a common utility and add support of REST API via https: protocol.
           if (url) {
             const { protocol, searchParams } = url;
-            if (protocol === 'ms-directline-imback:') {
-              const text = searchParams.get('text');
 
-              text && sendMessage(text);
+            if (protocol === 'ms-directline-imback:') {
+              const titleOrValue = searchParams.get('title') || searchParams.get('value');
+
+              if (!titleOrValue) {
+                throw new Error('When using "ms-directline-imback:" protocol, parameter "title" or "value" to be set.');
+              }
+
+              sendMessage(titleOrValue);
             } else if (protocol === 'ms-directline-messageback:') {
-              const value = searchParams.has('value') && JSON.parse(searchParams.get('value') || '{}');
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              let value: any;
+
+              if (searchParams.has('value')) {
+                const rawValue = searchParams.get('value') as string;
+
+                try {
+                  value = JSON.parse(rawValue);
+                } catch (error) {
+                  console.warn(
+                    'botframework-webchat: When using "ms-directline-messageback:" protocol, parameter "value" should be complex type or omitted.'
+                  );
+
+                  value = rawValue;
+                }
+              }
 
               sendMessageBack(
                 value,
@@ -89,12 +117,16 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
             } else if (protocol === 'ms-directline-postback:') {
               const value = searchParams.get('value');
 
-              value &&
-                sendPostBack(
+              sendPostBack(
+                value &&
                   // This is not conform to Bot Framework Direct Line specification.
                   // However, this is what PVA is currently using.
-                  searchParams.get('type') === 'application/json' ? JSON.parse(value) : value
-                );
+                  searchParams.get('valuetype') === 'application/json'
+                  ? JSON.parse(value)
+                  : value
+              );
+            } else {
+              throw new Error(`reviewAction.target is using an unsupported protocol "${protocol}".`);
             }
           }
         }

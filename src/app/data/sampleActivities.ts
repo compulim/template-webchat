@@ -68,7 +68,7 @@ export default [
           target: {
             '@type': 'EntryPoint',
             actionPlatform: 'https://directline.botframework.com',
-            urlTemplate: 'ms-directline-postback:?type=application/json&value=%7B%22rate%22%3A%22{rate}%22%7D'
+            urlTemplate: 'ms-directline-postback:?valuetype=application/json&value=%7B%22rate%22%3A%22{rate}%22%7D'
           }
         },
         contentType: 'https://schema.org/ReviewAction'
