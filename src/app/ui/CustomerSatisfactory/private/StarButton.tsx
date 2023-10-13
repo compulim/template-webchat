@@ -25,11 +25,11 @@ const StarButton = ({ checked, className, disabled, onClick, rating }: Props) =>
 
   const label = useLocalizer({ plural: true })(
     {
-      few: 'CSAT_RATING_FEW',
-      many: 'CSAT_RATING_MANY',
-      one: 'CSAT_RATING_ONE',
-      other: 'CSAT_RATING_OTHER',
-      two: 'CSAT_RATING_TWO'
+      few: 'CSAT_RATING_FEW_ALT',
+      many: 'CSAT_RATING_MANY_ALT',
+      one: 'CSAT_RATING_ONE_ALT',
+      other: 'CSAT_RATING_OTHER_ALT',
+      two: 'CSAT_RATING_TWO_ALT'
     },
     rating
   );
