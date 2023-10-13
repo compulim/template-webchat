@@ -66,6 +66,8 @@ export default memo(function Chat({ activities }: Props) {
 
         const echoBackActivity = await resolveAll();
 
+        console.log(echoBackActivity);
+
         await directLine.emulateIncomingActivity({
           ...(activities[activities.length - 1] || {}),
           replyToID: echoBackActivity.id
