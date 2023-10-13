@@ -61,6 +61,7 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
         const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
         const inputs: Map<string, boolean | number | null | string> = new Map();
 
+        // TODO: We should expand this to support many `*-input`.
         ratingValueInput?.valueName && inputs.set(ratingValueInput.valueName, ratingRef.current || null);
 
         if (target) {
@@ -70,6 +71,7 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
               : target.urlTemplate &&
                 new URL(parseTemplate(target.urlTemplate).expand(Object.fromEntries(inputs.entries())));
 
+          // TODO: We could potentially move this into a common utility and add support of REST API via https: protocol.
           if (url) {
             const { protocol, searchParams } = url;
             if (protocol === 'ms-directline-imback:') {
