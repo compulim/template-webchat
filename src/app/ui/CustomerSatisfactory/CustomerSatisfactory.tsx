@@ -34,10 +34,15 @@ type Props = {
       contentType: 'application/json';
       urlTemplate: string;
     };
-    result: {
+    resultReview: {
       '@type': 'Review';
       reviewRating: {
-        'ratingValue-input': 'required';
+        '@type': 'Rating';
+        'ratingValue-input': {
+          '@type': 'PropertyValueSpecification';
+          valueName: 'rate';
+          valueRequired: true;
+        };
       };
     };
   };
@@ -67,19 +72,26 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
       }
 
       try {
-        const { result, target } = reviewAction;
-        const reviewResult = result && {
-          ...result,
+        // https://schema.org/docs/actions.html
+        const { resultReview, target } = reviewAction;
+        const reviewResult = resultReview && {
+          ...resultReview,
           reviewRating: {
-            ...result.reviewRating,
+            ...resultReview.reviewRating,
             ratingValue: ratingRef.current as number,
             'ratingValue-input': undefined
           }
         };
 
+        const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
+        const inputs: Map<string, boolean | number | null | string> = new Map();
+
+        ratingValueInput?.valueName && inputs.set(ratingValueInput.valueName, ratingRef.current || null);
+
         if (reviewResult && target) {
-          const url = new URL(parseTemplate(target.urlTemplate).expand({ reviewRating: ratingRef.current as number }));
-          const { protocol, searchParams } = new URL(url);
+          const { protocol, searchParams } = new URL(
+            parseTemplate(target.urlTemplate).expand(Object.fromEntries(inputs.entries()))
+          );
 
           if (protocol === 'ms-directline-imback:') {
             const text = searchParams.get('text');
@@ -90,12 +102,12 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
 
             sendMessageBack(value, searchParams.get('text') || undefined, searchParams.get('displayText') || undefined);
           } else if (protocol === 'ms-directline-postback:') {
-            const rawValue = searchParams.get('value');
+            const value = searchParams.get('value');
 
-            if (rawValue) {
+            if (value) {
               // This is not conform to Bot Framework Direct Line specification.
               // However, this is what PVA is currently using.
-              sendPostBack(target.contentType === 'application/json' ? JSON.parse(rawValue) : rawValue);
+              sendPostBack(target.contentType === 'application/json' ? JSON.parse(value) : value);
             }
           }
         }

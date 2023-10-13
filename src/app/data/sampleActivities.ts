@@ -54,17 +54,22 @@ export default [
           '@type': 'ReviewAction',
           actionStatus: 'PotentialActionStatus',
           description: 'Great! Please rate your experience.',
+          resultReview: {
+            '@type': 'Review',
+            reviewRating: {
+              '@type': 'Rating',
+              'ratingValue-input': {
+                '@type': 'PropertyValueSpecification',
+                valueName: 'rate',
+                valueRequired: true
+              }
+            }
+          },
           target: {
             '@type': 'EntryPoint',
             actionPlatform: 'https://directline.botframework.com',
             contentType: 'application/json',
-            urlTemplate: 'ms-directline-postback:?value=%7B%22rate%22%3A%22{reviewRating}%22%7D'
-          },
-          result: {
-            '@type': 'Review',
-            reviewRating: {
-              'ratingValue-input': 'required'
-            }
+            urlTemplate: 'ms-directline-postback:?value=%7B%22rate%22%3A%22{rate}%22%7D'
           }
         },
         contentType: 'https://schema.org/ReviewAction'
