@@ -96,11 +96,12 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
           } else if (protocol === 'ms-directline-postback:') {
             const value = searchParams.get('value');
 
-            if (value) {
-              // This is not conform to Bot Framework Direct Line specification.
-              // However, this is what PVA is currently using.
-              sendPostBack(searchParams.get('type') === 'application/json' ? JSON.parse(value) : value);
-            }
+            value &&
+              sendPostBack(
+                // This is not conform to Bot Framework Direct Line specification.
+                // However, this is what PVA is currently using.
+                searchParams.get('type') === 'application/json' ? JSON.parse(value) : value
+              );
           }
         }
       } catch (error) {
