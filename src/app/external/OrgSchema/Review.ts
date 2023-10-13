@@ -18,6 +18,6 @@ export type Review = Thing<'Review'> & {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isReview(thing: any): thing is Review {
-  return isThingOf(thing, 'Review');
+export function isReview(thing: any, currentContext?: string): thing is Review {
+  return isThingOf(thing, 'Review', currentContext);
 }

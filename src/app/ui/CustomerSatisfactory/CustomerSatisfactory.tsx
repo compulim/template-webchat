@@ -15,6 +15,8 @@ import useStrings from './private/useStrings';
 import useUniqueId from './private/useUniqueId';
 import { isReview } from '../../external/OrgSchema/Review';
 import { isEntryPoint } from '../../external/OrgSchema/EntryPoint';
+import { isRating } from '../../external/OrgSchema/Rating';
+import { isPropertyValueSpecification } from '../../external/OrgSchema/PropertyValueSpecification';
 
 const { useFocus, useSendMessage, useSendMessageBack, useSendPostBack } = hooks;
 
@@ -60,17 +62,34 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
         // https://schema.org/docs/actions.html
         const { resultReview, target } = reviewAction;
 
-        if (!isReview(resultReview)) {
+        console.log({ reviewAction, resultReview, target });
+
+        if (!isReview(resultReview, reviewAction['@context'])) {
           throw new Error('reviewAction.resultReview must be of type "Review".');
-        } else if (!(isEntryPoint(target) || target instanceof URL)) {
+        } else if (!(isEntryPoint(target, reviewAction['@context']) || target instanceof URL)) {
           throw new Error('reviewAction.target must be URL or of type "EntryPoint".');
+        } else if (!isRating(resultReview.reviewRating, resultReview['@context'] || reviewAction['@context'])) {
+          throw new Error('reviewAction.resultReview.reviewRating must be URL or of type "Rating".');
         }
 
         const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
         const urlTemplateInputs: Map<string, boolean | number | null | string> = new Map();
 
-        // TODO: We should expand this to support many `*-input`.
-        ratingValueInput?.valueName && urlTemplateInputs.set(ratingValueInput.valueName, ratingRef.current || null);
+        if (ratingValueInput) {
+          if (
+            !isPropertyValueSpecification(
+              ratingValueInput,
+              resultReview.reviewRating['@context'] || resultReview['@context'] || reviewAction['@context']
+            )
+          ) {
+            throw new Error(
+              `reviewAction.resultReview.reviewRating['ratingValue-input'] must be URL or of type "Rating".`
+            );
+          }
+
+          // TODO: We should expand this to support many `*-input`.
+          ratingValueInput?.valueName && urlTemplateInputs.set(ratingValueInput.valueName, ratingRef.current || null);
+        }
 
         if (target) {
           const url =

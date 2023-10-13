@@ -16,6 +16,6 @@ export type EntryPoint = Thing<'EntryPoint'> & {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isEntryPoint(thing: any): thing is EntryPoint {
-  return isThingOf(thing, 'EntryPoint');
+export function isEntryPoint(thing: any, currentContext?: string): thing is EntryPoint {
+  return isThingOf(thing, 'EntryPoint', currentContext);
 }

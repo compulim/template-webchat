@@ -25,6 +25,6 @@ export type ReviewAction = Thing<'ReviewAction'> & {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isReviewAction(thing: any): thing is ReviewAction {
-  return isThingOf(thing, 'ReviewAction');
+export function isReviewAction(thing: any, currentContext?: string): thing is ReviewAction {
+  return isThingOf(thing, 'ReviewAction', currentContext);
 }

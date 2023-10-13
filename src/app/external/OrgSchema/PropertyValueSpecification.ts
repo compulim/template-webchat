@@ -20,6 +20,6 @@ export type WithInput<T extends Record<string, unknown>> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isPropertyValueSpecification(thing: any): thing is PropertyValueSpecification {
-  return isThingOf(thing, 'PropertyValueSpecification');
+export function isPropertyValueSpecification(thing: any, currentContext?: string): thing is PropertyValueSpecification {
+  return isThingOf(thing, 'PropertyValueSpecification', currentContext);
 }
