@@ -2,13 +2,22 @@ import { type AttachmentMiddleware, type AttachmentForScreenReaderMiddleware } f
 
 import CustomerSatisfactory from './CustomerSatisfactory';
 import CustomerSatisfactoryForScreenReader from './CustomerSatisfactoryForScreenReader';
+import { isReviewAction } from '../../external/OrgSchema/ReviewAction';
 
 const customerSatisfactoryMiddleware: AttachmentMiddleware =
   () =>
   next =>
   (...args) => {
-    if (args[0]?.attachment.contentType === 'https://schema.org/ReviewAction') {
-      return <CustomerSatisfactory reviewAction={args[0]?.attachment.content} />;
+    const [arg0] = args;
+
+    if (arg0) {
+      const {
+        attachment: { content, contentType }
+      } = arg0;
+
+      if (contentType === 'https://schema.org/ReviewAction' && isReviewAction(content)) {
+        return <CustomerSatisfactory initialReviewAction={content} />;
+      }
     }
 
     return next(...args);

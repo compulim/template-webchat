@@ -6,6 +6,8 @@ import { useRefFrom } from 'use-ref-from';
 import { useStateWithRef } from 'use-state-with-ref';
 import classNames from 'classnames';
 
+import { ActionStatusType } from '../../external/OrgSchema/ActionStatusType';
+import { type ReviewAction } from '../../external/OrgSchema/ReviewAction';
 import Checkmark from './private/Checkmark';
 import CustomerSatisfactoryStyle from './CustomerSatisfactoryStyle';
 import RovingTabIndexComposer from '../providers/RovingTabIndex/RovingTabIndexComposer';
@@ -21,36 +23,13 @@ declare global {
   }
 }
 
-// TODO: Add Schema.org.
 type Props = {
-  reviewAction: {
-    '@context': 'https://schema.org';
-    '@type': 'ReviewAction';
-    actionStatus: 'PotentialActionStatus';
-    description: string;
-    target?: {
-      '@type': 'EntryPoint';
-      actionPlatform: 'https://directline.botframework.com';
-      contentType: 'application/json';
-      urlTemplate: string;
-    };
-    resultReview: {
-      '@type': 'Review';
-      reviewRating: {
-        '@type': 'Rating';
-        'ratingValue-input': {
-          '@type': 'PropertyValueSpecification';
-          valueName: 'rate';
-          valueRequired: true;
-        };
-      };
-    };
-  };
+  initialReviewAction: ReviewAction;
 };
 
-const CustomerSatisfactory = ({ reviewAction }: Props) => {
+const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
   const [rating, setRating, ratingRef] = useStateWithRef<1 | 2 | 3 | 4 | 5 | undefined>(undefined);
-  const [submitted, setSubmitted] = useState(false);
+  const [reviewAction, setReviewAction] = useState<ReviewAction>(initialReviewAction);
   const focus = useFocus();
   const labelId = useUniqueId('webchat__customer-satisfactory');
   const localize = useLocalizer();
@@ -58,16 +37,21 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
   const sendMessageBack = useSendMessageBack();
   const sendPostBack = useSendPostBack();
 
-  // TODO: We should use HTML Form Validation.
-  const submitDisabled = typeof rating !== 'number' || submitted;
+  const submitted = reviewAction.actionStatus === ActionStatusType.CompletedActionStatus;
+  const markAsSubmitted = useCallback(
+    () => setReviewAction({ ...reviewAction, actionStatus: ActionStatusType.CompletedActionStatus }),
+    [setReviewAction]
+  );
 
-  const disabledRef = useRefFrom(submitDisabled);
+  const submissionDisabled = typeof rating !== 'number' || submitted;
+
+  const submissionDisabledRef = useRefFrom(submissionDisabled);
 
   const handleSubmit = useCallback<FormEventHandler>(
     event => {
       event.preventDefault();
 
-      if (disabledRef.current) {
+      if (submissionDisabledRef.current) {
         return;
       }
 
@@ -81,37 +65,46 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
         ratingValueInput?.valueName && inputs.set(ratingValueInput.valueName, ratingRef.current || null);
 
         if (target) {
-          const { protocol, searchParams } = new URL(
-            parseTemplate(target.urlTemplate).expand(Object.fromEntries(inputs.entries()))
-          );
+          const url =
+            target instanceof URL
+              ? target
+              : target.urlTemplate &&
+                new URL(parseTemplate(target.urlTemplate).expand(Object.fromEntries(inputs.entries())));
 
-          if (protocol === 'ms-directline-imback:') {
-            const text = searchParams.get('text');
+          if (url) {
+            const { protocol, searchParams } = url;
+            if (protocol === 'ms-directline-imback:') {
+              const text = searchParams.get('text');
 
-            text && sendMessage(text);
-          } else if (protocol === 'ms-directline-messageback:') {
-            const value = searchParams.has('value') && JSON.parse(searchParams.get('value') || '{}');
+              text && sendMessage(text);
+            } else if (protocol === 'ms-directline-messageback:') {
+              const value = searchParams.has('value') && JSON.parse(searchParams.get('value') || '{}');
 
-            sendMessageBack(value, searchParams.get('text') || undefined, searchParams.get('displayText') || undefined);
-          } else if (protocol === 'ms-directline-postback:') {
-            const value = searchParams.get('value');
-
-            value &&
-              sendPostBack(
-                // This is not conform to Bot Framework Direct Line specification.
-                // However, this is what PVA is currently using.
-                searchParams.get('type') === 'application/json' ? JSON.parse(value) : value
+              sendMessageBack(
+                value,
+                searchParams.get('text') || undefined,
+                searchParams.get('displayText') || undefined
               );
+            } else if (protocol === 'ms-directline-postback:') {
+              const value = searchParams.get('value');
+
+              value &&
+                sendPostBack(
+                  // This is not conform to Bot Framework Direct Line specification.
+                  // However, this is what PVA is currently using.
+                  searchParams.get('type') === 'application/json' ? JSON.parse(value) : value
+                );
+            }
           }
         }
       } catch (error) {
         console.error('botframework-webchat: Failed to send review action.', { error });
       }
 
-      setSubmitted(true);
+      markAsSubmitted();
       focus('sendBox');
     },
-    [disabledRef, setSubmitted]
+    [markAsSubmitted, submissionDisabledRef]
   );
 
   return (
@@ -125,16 +118,16 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
     >
       <div aria-labelledby={labelId} className="webchat__customer-satisfactory__radio-group" role="radiogroup">
         <p className="webchat__customer-satisfactory__label" id={labelId}>
-          {reviewAction.description}
+          {initialReviewAction.description}
         </p>
         <RovingTabIndexComposer>
           <StarBar disabled={submitted} onChange={setRating} rating={rating} />
         </RovingTabIndexComposer>
       </div>
       <button
-        aria-disabled={submitDisabled}
+        aria-disabled={submissionDisabled}
         className="webchat__customer-satisfactory__submit-button"
-        tabIndex={submitDisabled ? -1 : undefined}
+        tabIndex={submissionDisabled ? -1 : undefined}
         type="submit"
       >
         <span className="webchat__customer-satisfactory__submit-button-text">
