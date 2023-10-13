@@ -1,5 +1,5 @@
 import { isThingOf, type Thing } from './Thing';
-import { type ActionStatusType } from './ActionStatusType';
+import { Rating } from './Rating';
 
 /**
  * A review of an item - for example, of a restaurant, movie, or store.
@@ -9,8 +9,12 @@ import { type ActionStatusType } from './ActionStatusType';
  * @see https://schema.org/Review
  */
 export type Review = Thing<'Review'> & {
-  /** Indicates the current disposition of the Action. */
-  actionStatus?: ActionStatusType;
+  /**
+   * The rating given in this review. Note that reviews can themselves be rated.
+   * The `reviewRating` applies to rating given by the review.
+   * The [aggregateRating](https://schema.org/aggregateRating) property applies to the review itself, as a creative work.
+   */
+  reviewRating?: Rating;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

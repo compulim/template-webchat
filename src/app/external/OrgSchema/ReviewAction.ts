@@ -1,3 +1,5 @@
+import { ActionStatusType } from './ActionStatusType';
+import { EntryPoint } from './EntryPoint';
 import { isThingOf, type Thing } from './Thing';
 import { Review } from './Review';
 
@@ -9,8 +11,17 @@ import { Review } from './Review';
  * @see https://schema.org/ReviewAction
  */
 export type ReviewAction = Thing<'ReviewAction'> & {
+  /** Indicates the current disposition of the Action. */
+  actionStatus?: ActionStatusType;
+
+  /** A description of the item. */
+  description?: string;
+
   /** A sub property of result. The review that resulted in the performing of the action. */
   resultReview?: Review;
+
+  /** Indicates a target EntryPoint, or url, for an Action. */
+  target?: EntryPoint | URL;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
