@@ -6,11 +6,11 @@ import { useRefFrom } from 'use-ref-from';
 import { useStateWithRef } from 'use-state-with-ref';
 import classNames from 'classnames';
 
+import Checkmark from './private/Checkmark';
 import CustomerSatisfactoryStyle from './CustomerSatisfactoryStyle';
 import RovingTabIndexComposer from '../providers/RovingTabIndex/RovingTabIndexComposer';
 import StarBar from './private/StarBar';
 import useUniqueId from './private/useUniqueId';
-import Checkmark from './private/Checkmark';
 
 const { useFocus, useSendMessage, useSendMessageBack, useSendPostBack } = componentHooks;
 const { useLocalizer } = apiHooks;
