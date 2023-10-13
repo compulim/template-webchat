@@ -74,21 +74,13 @@ const CustomerSatisfactory = ({ reviewAction }: Props) => {
       try {
         // https://schema.org/docs/actions.html
         const { resultReview, target } = reviewAction;
-        const reviewResult = resultReview && {
-          ...resultReview,
-          reviewRating: {
-            ...resultReview.reviewRating,
-            ratingValue: ratingRef.current as number,
-            'ratingValue-input': undefined
-          }
-        };
 
         const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
         const inputs: Map<string, boolean | number | null | string> = new Map();
 
         ratingValueInput?.valueName && inputs.set(ratingValueInput.valueName, ratingRef.current || null);
 
-        if (reviewResult && target) {
+        if (target) {
           const { protocol, searchParams } = new URL(
             parseTemplate(target.urlTemplate).expand(Object.fromEntries(inputs.entries()))
           );
