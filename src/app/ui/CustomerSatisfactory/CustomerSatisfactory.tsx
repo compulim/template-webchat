@@ -62,8 +62,6 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
         // https://schema.org/docs/actions.html
         const { resultReview, target } = reviewAction;
 
-        console.log({ reviewAction, resultReview, target });
-
         if (!isReview(resultReview, reviewAction['@context'])) {
           throw new Error('reviewAction.resultReview must be of type "Review".');
         } else if (!(isEntryPoint(target, reviewAction['@context']) || target instanceof URL)) {
