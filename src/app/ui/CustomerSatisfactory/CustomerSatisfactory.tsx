@@ -67,17 +67,17 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
         }
 
         const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
-        const inputs: Map<string, boolean | number | null | string> = new Map();
+        const urlTemplateInputs: Map<string, boolean | number | null | string> = new Map();
 
         // TODO: We should expand this to support many `*-input`.
-        ratingValueInput?.valueName && inputs.set(ratingValueInput.valueName, ratingRef.current || null);
+        ratingValueInput?.valueName && urlTemplateInputs.set(ratingValueInput.valueName, ratingRef.current || null);
 
         if (target) {
           const url =
             target instanceof URL
               ? target
               : target.urlTemplate &&
-                new URL(parseTemplate(target.urlTemplate).expand(Object.fromEntries(inputs.entries())));
+                new URL(parseTemplate(target.urlTemplate).expand(Object.fromEntries(urlTemplateInputs.entries())));
 
           // TODO: We could potentially move this into a common utility and add support of REST API via https: protocol.
           if (url) {
