@@ -1,8 +1,8 @@
 import { type AttachmentMiddleware, type AttachmentForScreenReaderMiddleware } from 'botframework-webchat-api';
 
+import { isReviewAction } from '../../external/OrgSchema/ReviewAction';
 import CustomerSatisfactory from './CustomerSatisfactory';
 import CustomerSatisfactoryForScreenReader from './CustomerSatisfactoryForScreenReader';
-import { isReviewAction } from '../../external/OrgSchema/ReviewAction';
 
 const customerSatisfactoryMiddleware: AttachmentMiddleware =
   () =>
@@ -29,8 +29,16 @@ const forScreenReader: AttachmentForScreenReaderMiddleware =
   () =>
   next =>
   (...args) => {
-    if (args[0]?.attachment.contentType === 'https://schema.org/ReviewAction') {
-      return () => <CustomerSatisfactoryForScreenReader reviewAction={args[0]?.attachment.content} />;
+    const [arg0] = args;
+
+    if (arg0) {
+      const {
+        attachment: { content, contentType }
+      } = arg0;
+
+      if (contentType === 'https://schema.org/ReviewAction' && isReviewAction(content)) {
+        return () => <CustomerSatisfactoryForScreenReader initialReviewAction={content} />;
+      }
     }
 
     return next(...args);

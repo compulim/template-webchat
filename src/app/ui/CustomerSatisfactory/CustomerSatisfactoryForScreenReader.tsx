@@ -1,6 +1,7 @@
 import { hooks } from 'botframework-webchat-api';
 
 import useUniqueId from './private/useUniqueId';
+import { type ReviewAction } from '../../external/OrgSchema/ReviewAction';
 
 const { useLocalizer } = hooks;
 
@@ -10,26 +11,8 @@ declare global {
   }
 }
 
-// TODO: Add Schema.org.
 type Props = {
-  reviewAction: {
-    '@context': 'https://schema.org';
-    '@type': 'ReviewAction';
-    actionStatus: 'PotentialActionStatus';
-    description: string;
-    target?: {
-      '@type': 'EntryPoint';
-      actionPlatform: 'https://directline.botframework.com';
-      contentType: 'application/json';
-      urlTemplate: string;
-    };
-    result: {
-      '@type': 'Review';
-      reviewRating: {
-        'ratingValue-input': 'required';
-      };
-    };
-  };
+  initialReviewAction: ReviewAction;
 };
 
 const RATING_PLURAL_IDS = {
@@ -40,7 +23,7 @@ const RATING_PLURAL_IDS = {
   two: 'CSAT_RATING_TWO_ALT'
 };
 
-const CustomerSatisfactoryForScreenReader = ({ reviewAction }: Props) => {
+const CustomerSatisfactoryForScreenReader = ({ initialReviewAction }: Props) => {
   const labelId = useUniqueId('webchat__customer-satisfactory');
   const localize = useLocalizer();
   const localizePlural = useLocalizer({ plural: true });
@@ -48,7 +31,8 @@ const CustomerSatisfactoryForScreenReader = ({ reviewAction }: Props) => {
   return (
     <article>
       <div aria-labelledby={labelId} role="radiogroup">
-        <p id={labelId}>{reviewAction.description}</p>
+        <p id={labelId}>{initialReviewAction.description}</p>
+        {/* TODO: Can we use <div role="radio"> instead of <button>? */}
         <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 1)} role="radio" type="button" />
         <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 2)} role="radio" type="button" />
         <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 3)} role="radio" type="button" />
