@@ -59,92 +59,101 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
       }
 
       try {
-        // https://schema.org/docs/actions.html
+        // This is based from https://schema.org/docs/actions.html.
         const { resultReview, target } = reviewAction;
 
-        if (!isReview(resultReview, reviewAction['@context'])) {
-          throw new Error('reviewAction.resultReview must be of type "Review".');
+        // TODO: We could port validations to TypeScript-based validations.
+        if (!target) {
+          throw new Error('reviewAction.target must be set.');
         } else if (!(isEntryPoint(target, reviewAction['@context']) || target instanceof URL)) {
           throw new Error('reviewAction.target must be URL or of type "EntryPoint".');
-        } else if (!isRating(resultReview.reviewRating, resultReview['@context'] || reviewAction['@context'])) {
-          throw new Error('reviewAction.resultReview.reviewRating must be URL or of type "Rating".');
         }
 
-        const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
-        const urlTemplateInputs: Map<string, boolean | number | null | string> = new Map();
+        let url: URL;
 
-        if (ratingValueInput) {
-          if (
-            !isPropertyValueSpecification(
-              ratingValueInput,
-              resultReview.reviewRating['@context'] || resultReview['@context'] || reviewAction['@context']
-            )
-          ) {
+        if (target instanceof URL) {
+          url = target;
+        } else {
+          if (!target.urlTemplate) {
             throw new Error(
-              `reviewAction.resultReview.reviewRating['ratingValue-input'] must be URL or of type "Rating".`
+              'When reviewAction.target is of type "EntryPoint", reviewAction.target.urlTemplate must be set.'
+            );
+          } else if (!isReview(resultReview, reviewAction['@context'])) {
+            throw new Error(
+              'When reviewAction.target is of type "EntryPoint", reviewAction.resultReview must be of type "Review".'
+            );
+          } else if (!isRating(resultReview.reviewRating, resultReview['@context'] || reviewAction['@context'])) {
+            throw new Error(
+              'When reviewAction.target is of type "EntryPoint", reviewAction.resultReview.reviewRating must be of type "Rating".'
             );
           }
 
-          // TODO: We should expand this to support many `*-input`.
-          ratingValueInput?.valueName && urlTemplateInputs.set(ratingValueInput.valueName, ratingRef.current || null);
+          const ratingValueInput = resultReview?.reviewRating?.['ratingValue-input'];
+          const urlTemplateInputs: Map<string, boolean | number | null | string> = new Map();
+
+          if (ratingValueInput) {
+            if (
+              !isPropertyValueSpecification(
+                ratingValueInput,
+                resultReview.reviewRating['@context'] || resultReview['@context'] || reviewAction['@context']
+              )
+            ) {
+              throw new Error(
+                `When reviewAction.target is of type "EntryPoint", reviewAction.resultReview.reviewRating['ratingValue-input'] must be of type "Rating".`
+              );
+            }
+
+            // TODO: We should expand this to support many `*-input`.
+            ratingValueInput?.valueName && urlTemplateInputs.set(ratingValueInput.valueName, ratingRef.current || null);
+          }
+
+          url = new URL(parseTemplate(target.urlTemplate).expand(Object.fromEntries(urlTemplateInputs.entries())));
         }
 
-        if (target) {
-          const url =
-            target instanceof URL
-              ? target
-              : target.urlTemplate &&
-                new URL(parseTemplate(target.urlTemplate).expand(Object.fromEntries(urlTemplateInputs.entries())));
+        // TODO: We could potentially move this into a common utility and add support of REST API via https: protocol.
+        if (url) {
+          const { protocol, searchParams } = url;
 
-          // TODO: We could potentially move this into a common utility and add support of REST API via https: protocol.
-          if (url) {
-            const { protocol, searchParams } = url;
+          if (protocol === 'ms-directline-imback:') {
+            const titleOrValue = searchParams.get('title') || searchParams.get('value');
 
-            if (protocol === 'ms-directline-imback:') {
-              const titleOrValue = searchParams.get('title') || searchParams.get('value');
-
-              if (!titleOrValue) {
-                throw new Error('When using "ms-directline-imback:" protocol, parameter "title" or "value" to be set.');
-              }
-
-              sendMessage(titleOrValue);
-            } else if (protocol === 'ms-directline-messageback:') {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              let value: any;
-
-              if (searchParams.has('value')) {
-                const rawValue = searchParams.get('value') as string;
-
-                try {
-                  value = JSON.parse(rawValue);
-                } catch (error) {
-                  console.warn(
-                    'botframework-webchat: When using "ms-directline-messageback:" protocol, parameter "value" should be complex type or omitted.'
-                  );
-
-                  value = rawValue;
-                }
-              }
-
-              sendMessageBack(
-                value,
-                searchParams.get('text') || undefined,
-                searchParams.get('displayText') || undefined
-              );
-            } else if (protocol === 'ms-directline-postback:') {
-              const value = searchParams.get('value');
-
-              sendPostBack(
-                value &&
-                  // This is not conform to Bot Framework Direct Line specification.
-                  // However, this is what PVA is currently using.
-                  searchParams.get('valuetype') === 'application/json'
-                  ? JSON.parse(value)
-                  : value
-              );
-            } else {
-              throw new Error(`reviewAction.target is using an unsupported protocol "${protocol}".`);
+            if (!titleOrValue) {
+              throw new Error('When using "ms-directline-imback:" protocol, parameter "title" or "value" to be set.');
             }
+
+            sendMessage(titleOrValue);
+          } else if (protocol === 'ms-directline-messageback:') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let value: any;
+
+            if (searchParams.has('value')) {
+              const rawValue = searchParams.get('value') as string;
+
+              try {
+                value = JSON.parse(rawValue);
+              } catch (error) {
+                console.warn(
+                  'botframework-webchat: When using "ms-directline-messageback:" protocol, parameter "value" should be complex type or omitted.'
+                );
+
+                value = rawValue;
+              }
+            }
+
+            sendMessageBack(value, searchParams.get('text') || undefined, searchParams.get('displayText') || undefined);
+          } else if (protocol === 'ms-directline-postback:') {
+            const value = searchParams.get('value');
+
+            sendPostBack(
+              value &&
+                // This is not conform to Bot Framework Direct Line specification.
+                // However, this is what PVA is currently using.
+                searchParams.get('valuetype') === 'application/json'
+                ? JSON.parse(value)
+                : value
+            );
+          } else {
+            throw new Error(`reviewAction.target is using an unsupported protocol "${protocol}".`);
           }
         }
       } catch (error) {
