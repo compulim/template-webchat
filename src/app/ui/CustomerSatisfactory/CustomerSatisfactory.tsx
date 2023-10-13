@@ -1,5 +1,4 @@
-import { hooks as apiHooks } from 'botframework-webchat-api';
-import { hooks as componentHooks } from 'botframework-webchat-component';
+import { hooks } from 'botframework-webchat-component';
 import { parseTemplate } from 'url-template';
 import { type FormEventHandler, Fragment, useCallback, useState } from 'react';
 import { useRefFrom } from 'use-ref-from';
@@ -12,10 +11,10 @@ import Checkmark from './private/Checkmark';
 import CustomerSatisfactoryStyle from './CustomerSatisfactoryStyle';
 import RovingTabIndexComposer from '../providers/RovingTabIndex/RovingTabIndexComposer';
 import StarBar from './private/StarBar';
+import useStrings from './private/useStrings';
 import useUniqueId from './private/useUniqueId';
 
-const { useFocus, useSendMessage, useSendMessageBack, useSendPostBack } = componentHooks;
-const { useLocalizer } = apiHooks;
+const { useFocus, useSendMessage, useSendMessageBack, useSendPostBack } = hooks;
 
 declare global {
   interface URLSearchParams {
@@ -30,9 +29,9 @@ type Props = {
 const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
   const [rating, setRating, ratingRef] = useStateWithRef<1 | 2 | 3 | 4 | 5 | undefined>(undefined);
   const [reviewAction, setReviewAction] = useState<ReviewAction>(initialReviewAction);
+  const { submitButtonText, submittedText } = useStrings();
   const focus = useFocus();
   const labelId = useUniqueId('webchat__customer-satisfactory');
-  const localize = useLocalizer();
   const sendMessage = useSendMessage();
   const sendMessageBack = useSendMessageBack();
   const sendPostBack = useSendPostBack();
@@ -134,10 +133,10 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
           {submitted ? (
             <Fragment>
               <Checkmark />
-              {localize('CSAT_SUBMITTED_TEXT')}
+              {submittedText}
             </Fragment>
           ) : (
-            localize('CSAT_SUBMIT_BUTTON_TEXT')
+            submitButtonText
           )}
         </span>
       </button>

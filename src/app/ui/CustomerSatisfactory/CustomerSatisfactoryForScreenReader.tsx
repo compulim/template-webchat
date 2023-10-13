@@ -1,9 +1,6 @@
-import { hooks } from 'botframework-webchat-api';
-
-import useUniqueId from './private/useUniqueId';
 import { type ReviewAction } from '../../external/OrgSchema/ReviewAction';
-
-const { useLocalizer } = hooks;
+import useStrings from './private/useStrings';
+import useUniqueId from './private/useUniqueId';
 
 declare global {
   interface URLSearchParams {
@@ -15,31 +12,22 @@ type Props = {
   initialReviewAction: ReviewAction;
 };
 
-const RATING_PLURAL_IDS = {
-  few: 'CSAT_RATING_FEW_ALT',
-  many: 'CSAT_RATING_MANY_ALT',
-  one: 'CSAT_RATING_ONE_ALT',
-  other: 'CSAT_RATING_OTHER_ALT',
-  two: 'CSAT_RATING_TWO_ALT'
-};
-
 const CustomerSatisfactoryForScreenReader = ({ initialReviewAction }: Props) => {
+  const { getRatingAltText, submitButtonText } = useStrings();
   const labelId = useUniqueId('webchat__customer-satisfactory');
-  const localize = useLocalizer();
-  const localizePlural = useLocalizer({ plural: true });
 
   return (
     <article>
       <div aria-labelledby={labelId} role="radiogroup">
         <p id={labelId}>{initialReviewAction.description}</p>
         {/* TODO: Can we use <div role="radio"> instead of <button>? */}
-        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 1)} role="radio" type="button" />
-        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 2)} role="radio" type="button" />
-        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 3)} role="radio" type="button" />
-        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 4)} role="radio" type="button" />
-        <button aria-checked={false} aria-label={localizePlural(RATING_PLURAL_IDS, 5)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={getRatingAltText(1)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={getRatingAltText(2)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={getRatingAltText(3)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={getRatingAltText(4)} role="radio" type="button" />
+        <button aria-checked={false} aria-label={getRatingAltText(5)} role="radio" type="button" />
       </div>
-      <input type="submit" value={localize('CSAT_SUBMIT_BUTTON_TEXT')} />
+      <input type="submit" value={submitButtonText} />
     </article>
   );
 };
