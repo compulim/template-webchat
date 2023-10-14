@@ -29,11 +29,13 @@ export default function createDirectLineEmulator({ autoConnect = true, store } =
   const connectionStatusDeferredObservable = createDeferredObservable(() => {
     connectionStatusDeferredObservable.next(0);
   });
-  const activityDeferredObservable = createDeferredObservable(async () => {
-    connectionStatusDeferredObservable.next(1);
+  const activityDeferredObservable = createDeferredObservable(() => {
+    (async function () {
+      connectionStatusDeferredObservable.next(1);
 
-    await connectedDeferred.promise;
-    connectionStatusDeferredObservable.next(2);
+      await connectedDeferred.promise;
+      connectionStatusDeferredObservable.next(2);
+    })();
   });
 
   const postActivityCallDeferreds = [];
