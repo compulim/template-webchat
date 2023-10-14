@@ -19,7 +19,16 @@ const customerSatisfactoryMiddleware: AttachmentMiddleware =
       } = arg0;
 
       if (contentType === 'https://schema.org/ReviewAction' && isReviewAction(content)) {
-        return <CustomerSatisfactory initialReviewAction={content} />;
+        try {
+          const reviewAction = parse(ReviewActionSchema, content) as ReviewAction;
+
+          return <CustomerSatisfactory initialReviewAction={reviewAction} />;
+        } catch (error) {
+          // TODO: We should use <ErrorBoundary>.
+          console.error(`botframework-webchat: Failed to render ReviewAction.`, { error });
+
+          return <Fragment />;
+        }
       }
     }
 
@@ -46,7 +55,7 @@ const forScreenReader: AttachmentForScreenReaderMiddleware =
           return () => <CustomerSatisfactoryForScreenReader initialReviewAction={reviewAction} />;
         } catch (error) {
           // TODO: We should use <ErrorBoundary>.
-          console.error(`botframework-webchat: Failed to render ReviewAction.`, { error });
+          console.error(`botframework-webchat: Failed to render ReviewAction for screen reader.`, { error });
 
           return () => <Fragment />;
         }
