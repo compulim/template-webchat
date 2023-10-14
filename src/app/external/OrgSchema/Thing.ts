@@ -1,4 +1,4 @@
-import { type OrgSchemaThing } from 'botframework-webchat-core';
+// import { type OrgSchemaThing } from 'botframework-webchat-core';
 
 /**
  * The most generic type of item.
@@ -7,14 +7,16 @@ import { type OrgSchemaThing } from 'botframework-webchat-core';
  *
  * @see https://schema.org/Thing
  */
-export type Thing<T extends string = string> = OrgSchemaThing<T> & {
-  '@id'?: string;
+export type Thing<T extends string = string> = {
+  '@context'?: 'https://schema.org' | undefined;
+  '@id'?: string | undefined;
+  '@type': T;
 
   /** An alias for the item. */
-  alternateName?: string;
+  alternateName?: string | undefined;
 
   /** The name of the item. */
-  name?: string;
+  name?: string | undefined;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +41,7 @@ export function isThingOf<T extends string>(thing: any, type: T, currentContext?
       return thing['@type'] === type;
     }
 
-    return thing.type === `https://schema.org/${type}`;
+    // return thing.type === `https://schema.org/${type}`;
   }
 
   return false;
