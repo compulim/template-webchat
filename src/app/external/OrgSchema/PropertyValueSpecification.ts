@@ -9,10 +9,7 @@ import { isThingOf, type Thing } from './Thing';
  */
 export type PropertyValueSpecification = Thing<'PropertyValueSpecification'> & {
   /** Indicates the name of the PropertyValueSpecification to be used in URL templates and form encoding in a manner analogous to HTML's input@name. */
-  valueName?: string;
-
-  /** Whether the property must be filled in to complete the action. Default is false. */
-  valueRequired?: boolean;
+  valueName?: string | undefined;
 };
 
 export type WithInput<T extends Record<string, unknown>> = {

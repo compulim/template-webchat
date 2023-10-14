@@ -14,7 +14,7 @@ export type Review = Thing<'Review'> & {
    * The `reviewRating` applies to rating given by the review.
    * The [aggregateRating](https://schema.org/aggregateRating) property applies to the review itself, as a creative work.
    */
-  reviewRating?: Rating;
+  reviewRating?: Rating | undefined;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

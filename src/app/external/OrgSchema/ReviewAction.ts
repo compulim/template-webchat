@@ -12,16 +12,16 @@ import { Review } from './Review';
  */
 export type ReviewAction = Thing<'ReviewAction'> & {
   /** Indicates the current disposition of the Action. */
-  actionStatus?: ActionStatusType;
+  actionStatus?: ActionStatusType | undefined;
 
   /** A description of the item. */
-  description?: string;
+  description?: string | undefined;
 
   /** A sub property of result. The review that resulted in the performing of the action. */
-  resultReview?: Review;
+  resultReview?: Review | undefined;
 
   /** Indicates a target EntryPoint, or url, for an Action. */
-  target?: EntryPoint | URL;
+  target?: EntryPoint | undefined | URL;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
