@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { parse } from 'valibot';
 import { type AttachmentMiddleware, type AttachmentForScreenReaderMiddleware } from 'botframework-webchat-api';
 
-import { isReviewAction, type ReviewAction } from '../../external/OrgSchema/ReviewAction';
+import { isReviewAction } from '../../external/OrgSchema/ReviewAction';
 import CustomerSatisfactory from './CustomerSatisfactory';
 import CustomerSatisfactoryForScreenReader from './CustomerSatisfactoryForScreenReader';
 import ReviewActionSchema from './ReviewActionSchema';
@@ -20,7 +20,7 @@ const customerSatisfactoryMiddleware: AttachmentMiddleware =
 
       if (contentType === 'https://schema.org/ReviewAction' && isReviewAction(content)) {
         try {
-          const reviewAction = parse(ReviewActionSchema, content) as ReviewAction;
+          const reviewAction = parse(ReviewActionSchema, content);
 
           return <CustomerSatisfactory initialReviewAction={reviewAction} />;
         } catch (error) {
@@ -50,7 +50,7 @@ const forScreenReader: AttachmentForScreenReaderMiddleware =
 
       if (contentType === 'https://schema.org/ReviewAction' && isReviewAction(content)) {
         try {
-          const reviewAction = parse(ReviewActionSchema, content) as ReviewAction;
+          const reviewAction = parse(ReviewActionSchema, content);
 
           return () => <CustomerSatisfactoryForScreenReader initialReviewAction={reviewAction} />;
         } catch (error) {

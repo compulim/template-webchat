@@ -13,7 +13,7 @@ export type PropertyValueSpecification = Thing<'PropertyValueSpecification'> & {
 };
 
 export type WithInput<T extends Record<string, unknown>> = {
-  [K in keyof T as K extends string ? `${K}-input` : K]: PropertyValueSpecification;
+  [K in keyof T as K extends string ? `${K}-input` : K]?: PropertyValueSpecification | undefined;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,5 @@
 import { isThingOf, type Thing } from './Thing';
-import { WithInput } from './PropertyValueSpecification';
+import { type WithInput } from './PropertyValueSpecification';
 
 /**
  * A rating is an evaluation on a numeric scale, such as 1 to 5 stars.

@@ -1,10 +1,9 @@
-import { enumType, number, optional, string, union, url } from 'valibot';
+import { enumType, number, object, optional, string, union, url } from 'valibot';
 
 import { ActionStatusType } from '../../external/OrgSchema/ActionStatusType';
 import exactString from './private/exactString';
-import partialObject from './private/partialObject';
 
-const ReviewActionSchema = partialObject(
+const ReviewActionSchema = object(
   {
     '@context': optional(exactString('https://schema.org', 'object must be from context "https://schema.org"')),
     '@type': exactString('ReviewAction', 'object must be of type "ReviewAction"'),
@@ -21,27 +20,37 @@ const ReviewActionSchema = partialObject(
     ),
     description: optional(string('"description" must be of type string')),
     resultReview: optional(
-      partialObject(
+      object(
         {
           '@context': optional(
             exactString('https://schema.org', '"resultReview" must be from context "https://schema.org"')
           ),
           '@type': exactString('Review', `"resultReview" must be of type "Review"`),
           reviewRating: optional(
-            partialObject({
-              '@context': optional(string()),
+            object({
+              '@context': optional(
+                exactString(
+                  'https://schema.org',
+                  '"resultReview.reviewRating" must be from context "https://schema.org"'
+                )
+              ),
               '@type': exactString('Rating', `"resultReview.reviewRating" must be of type "Rating"`),
               ratingValue: optional(number(`"resultReview.reviewRating.ratingValue" must be of type "number"`)),
               'ratingValue-input': optional(
-                partialObject(
+                object(
                   {
-                    '@context': optional(string()),
+                    '@context': optional(
+                      exactString(
+                        'https://schema.org',
+                        '"resultReview.reviewRating.ratingValue-input" must be from context "https://schema.org"'
+                      )
+                    ),
                     '@type': exactString(
                       'PropertyValueSpecification',
                       `"resultReview.reviewRating['ratingValue-input']" must be of type "PropertyValueSpecification"`
                     ),
-                    valueName: string(
-                      `"resultReview.reviewRating['ratingValue-input'].valueName" must be of type string`
+                    valueName: optional(
+                      string(`"resultReview.reviewRating['ratingValue-input'].valueName" must be of type string`)
                     )
                   },
                   `"resultReview.reviewRating['ratingValue-input']" must be an object`
@@ -56,7 +65,7 @@ const ReviewActionSchema = partialObject(
     target: optional(
       union(
         [
-          partialObject({
+          object({
             '@context': optional(
               exactString('https://schema.org', '"target" must be from context "https://schema.org"')
             ),
