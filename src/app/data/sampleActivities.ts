@@ -60,8 +60,7 @@ export default [
               '@type': 'Rating',
               'ratingValue-input': {
                 '@type': 'PropertyValueSpecification',
-                valueName: 'rate',
-                valueRequired: true
+                valueName: 'rate'
               }
             }
           },
