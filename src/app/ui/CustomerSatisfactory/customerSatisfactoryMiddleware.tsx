@@ -5,7 +5,7 @@ import { type AttachmentMiddleware, type AttachmentForScreenReaderMiddleware } f
 import { isReviewAction } from '../../external/OrgSchema/ReviewAction';
 import CustomerSatisfactory from './CustomerSatisfactory';
 import CustomerSatisfactoryForScreenReader from './CustomerSatisfactoryForScreenReader';
-import ReviewActionSchema from './ReviewActionSchema';
+import ReviewActionSchema from './private/schema/ReviewActionSchema';
 
 const customerSatisfactoryMiddleware: AttachmentMiddleware =
   () =>
