@@ -21,7 +21,7 @@ export type ReviewAction = Thing<'ReviewAction'> & {
   resultReview?: Review | undefined;
 
   /** Indicates a target EntryPoint, or url, for an Action. */
-  target?: EntryPoint | undefined | URL;
+  target?: EntryPoint | string | undefined;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

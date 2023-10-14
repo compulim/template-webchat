@@ -45,6 +45,7 @@ const forScreenReader: AttachmentForScreenReaderMiddleware =
 
           return () => <CustomerSatisfactoryForScreenReader initialReviewAction={reviewAction} />;
         } catch (error) {
+          // TODO: We should use <ErrorBoundary>.
           console.error(`botframework-webchat: Failed to render ReviewAction.`, { error });
 
           return () => <Fragment />;

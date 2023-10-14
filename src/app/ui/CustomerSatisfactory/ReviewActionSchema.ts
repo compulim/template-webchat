@@ -1,4 +1,4 @@
-import { enumType, number, optional, string } from 'valibot';
+import { enumType, number, optional, string, union, url } from 'valibot';
 
 import { ActionStatusType } from '../../external/OrgSchema/ActionStatusType';
 import exactString from './private/exactString';
@@ -54,17 +54,22 @@ const ReviewActionSchema = partialObject(
       )
     ),
     target: optional(
-      partialObject(
-        {
-          '@context': optional(exactString('https://schema.org', '"target" must be from context "https://schema.org"')),
-          '@type': exactString('EntryPoint', `"target" must be of type "EntryPoint"`),
-          actionPlatform: exactString(
-            'https://directline.botframework.com',
-            `"target.actionPlatform" must be of "https://directline.botframework.com"`
-          ),
-          urlTemplate: string(`"target.urlTemplate" must be of type string`)
-        },
-        `"target" must be an object`
+      union(
+        [
+          partialObject({
+            '@context': optional(
+              exactString('https://schema.org', '"target" must be from context "https://schema.org"')
+            ),
+            '@type': exactString('EntryPoint', `"target" must be of type "EntryPoint"`),
+            actionPlatform: exactString(
+              'https://directline.botframework.com',
+              `"target.actionPlatform" must be "https://directline.botframework.com"`
+            ),
+            urlTemplate: string([url(`"target.urlTemplate" must be a URL`)])
+          }),
+          string([url()])
+        ],
+        '"target" must be of type "EntryPoint" or URL'
       )
     )
   },

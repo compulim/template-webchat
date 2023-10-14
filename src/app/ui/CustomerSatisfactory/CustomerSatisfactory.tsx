@@ -6,19 +6,20 @@ import { useStateWithRef } from 'use-state-with-ref';
 import classNames from 'classnames';
 
 import { ActionStatusType } from '../../external/OrgSchema/ActionStatusType';
+import { isEntryPoint } from '../../external/OrgSchema/EntryPoint';
+import { isPropertyValueSpecification } from '../../external/OrgSchema/PropertyValueSpecification';
+import { isRating } from '../../external/OrgSchema/Rating';
+import { isReview } from '../../external/OrgSchema/Review';
 import { type ReviewAction } from '../../external/OrgSchema/ReviewAction';
 import Checkmark from './private/Checkmark';
 import CustomerSatisfactoryStyle from './CustomerSatisfactoryStyle';
 import RovingTabIndexComposer from '../providers/RovingTabIndex/RovingTabIndexComposer';
 import StarBar from './private/StarBar';
+import useOpenURL from '../../hooks/useOpenURL';
 import useStrings from './private/useStrings';
 import useUniqueId from './private/useUniqueId';
-import { isReview } from '../../external/OrgSchema/Review';
-import { isEntryPoint } from '../../external/OrgSchema/EntryPoint';
-import { isRating } from '../../external/OrgSchema/Rating';
-import { isPropertyValueSpecification } from '../../external/OrgSchema/PropertyValueSpecification';
 
-const { useFocus, useSendMessage, useSendMessageBack, useSendPostBack } = hooks;
+const { useFocus } = hooks;
 
 declare global {
   interface URLSearchParams {
@@ -36,9 +37,7 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
   const { submitButtonText, submittedText } = useStrings();
   const focus = useFocus();
   const labelId = useUniqueId('webchat__customer-satisfactory');
-  const sendMessage = useSendMessage();
-  const sendMessageBack = useSendMessageBack();
-  const sendPostBack = useSendPostBack();
+  const openURL = useOpenURL();
 
   const submitted = reviewAction.actionStatus === ActionStatusType.CompletedActionStatus;
   const markAsSubmitted = useCallback(
@@ -65,14 +64,14 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
         // TODO: We could port validations to TypeScript-based validations.
         if (!target) {
           throw new Error('reviewAction.target must be set.');
-        } else if (!(isEntryPoint(target, reviewAction['@context']) || target instanceof URL)) {
+        } else if (!(isEntryPoint(target, reviewAction['@context']) || typeof target === 'string')) {
           throw new Error('reviewAction.target must be URL or of type "EntryPoint".');
         }
 
         let url: URL;
 
-        if (target instanceof URL) {
-          url = target;
+        if (typeof target === 'string') {
+          url = new URL(target);
         } else {
           if (!target.urlTemplate) {
             throw new Error(
@@ -110,52 +109,7 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
           url = new URL(parseTemplate(target.urlTemplate).expand(Object.fromEntries(urlTemplateInputs.entries())));
         }
 
-        // TODO: We could potentially move this into a common utility and add support of REST API via https: protocol.
-        if (url) {
-          const { protocol, searchParams } = url;
-
-          if (protocol === 'ms-directline-imback:') {
-            const titleOrValue = searchParams.get('title') || searchParams.get('value');
-
-            if (!titleOrValue) {
-              throw new Error('When using "ms-directline-imback:" protocol, parameter "title" or "value" to be set.');
-            }
-
-            sendMessage(titleOrValue);
-          } else if (protocol === 'ms-directline-messageback:') {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let value: any;
-
-            if (searchParams.has('value')) {
-              const rawValue = searchParams.get('value') as string;
-
-              try {
-                value = JSON.parse(rawValue);
-              } catch (error) {
-                console.warn(
-                  'botframework-webchat: When using "ms-directline-messageback:" protocol, parameter "value" should be complex type or omitted.'
-                );
-
-                value = rawValue;
-              }
-            }
-
-            sendMessageBack(value, searchParams.get('text') || undefined, searchParams.get('displayText') || undefined);
-          } else if (protocol === 'ms-directline-postback:') {
-            const value = searchParams.get('value');
-
-            sendPostBack(
-              value &&
-                // This is not conform to Bot Framework Direct Line specification.
-                // However, this is what PVA is currently using.
-                searchParams.get('valuetype') === 'application/json'
-                ? JSON.parse(value)
-                : value
-            );
-          } else {
-            throw new Error(`reviewAction.target is using an unsupported protocol "${protocol}".`);
-          }
-        }
+        url && openURL(url);
       } catch (error) {
         console.error('botframework-webchat: Failed to send review action.', { error });
       }
