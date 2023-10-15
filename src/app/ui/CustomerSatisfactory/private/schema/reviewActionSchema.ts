@@ -6,7 +6,7 @@ import thing from './thing';
 
 // This is stricter than Schema.org.
 // Enforcing some rules to make sure the attachment received has all fields we need.
-const ReviewActionSchema = thing('ReviewAction', {
+const reviewActionSchema = thing('ReviewAction', {
   actionStatus: optional(
     enumType(
       [
@@ -52,4 +52,4 @@ const ReviewActionSchema = thing('ReviewAction', {
   )
 });
 
-export default ReviewActionSchema;
+export default reviewActionSchema;
