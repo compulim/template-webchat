@@ -70,7 +70,7 @@ export default [
             urlTemplate: 'ms-directline-postback:?valuetype=application/json&value=%7B%22rate%22%3A%22{rate}%22%7D'
           }
         },
-        contentType: 'https://schema.org/ReviewAction'
+        contentType: 'application/ld+json'
       }
     ]
   }

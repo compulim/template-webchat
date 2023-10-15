@@ -18,7 +18,7 @@ const customerSatisfactoryMiddleware: AttachmentMiddleware =
         attachment: { content, contentType }
       } = arg0;
 
-      if (contentType === 'https://schema.org/ReviewAction' && isReviewAction(content)) {
+      if (contentType === 'application/ld+json' && isReviewAction(content)) {
         try {
           const reviewAction = parse(reviewActionSchema, content);
 
