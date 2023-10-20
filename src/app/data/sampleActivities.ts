@@ -58,6 +58,7 @@ export default [
             '@type': 'Review',
             reviewRating: {
               '@type': 'Rating',
+              description: ['Bad', 'Poor', 'Average', 'Good', 'Excellent'],
               'ratingValue-input': {
                 '@type': 'PropertyValueSpecification',
                 valueName: 'rate'

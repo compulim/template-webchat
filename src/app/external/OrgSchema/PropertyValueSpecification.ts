@@ -12,7 +12,7 @@ export type PropertyValueSpecification = Thing<'PropertyValueSpecification'> & {
   valueName?: string | undefined;
 };
 
-export type WithInput<T extends Record<string, unknown>> = {
+export type WithInput<T extends Record<string, unknown>> = T & {
   [K in keyof T as K extends string ? `${K}-input` : K]?: PropertyValueSpecification | undefined;
 };
 

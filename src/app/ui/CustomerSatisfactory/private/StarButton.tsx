@@ -13,9 +13,10 @@ type Props = {
   disabled?: boolean | undefined;
   onClick?: (index: 1 | 2 | 3 | 4 | 5) => void;
   rating: 1 | 2 | 3 | 4 | 5;
+  title?: string | undefined;
 };
 
-const StarButton = ({ checked, className, disabled, onClick, rating }: Props) => {
+const StarButton = ({ checked, className, disabled, onClick, rating, title }: Props) => {
   const { getRatingAltText } = useStrings();
   const disabledRef = useRefFrom(disabled);
   const onClickRef = useRefFrom(onClick);
@@ -42,6 +43,7 @@ const StarButton = ({ checked, className, disabled, onClick, rating }: Props) =>
       ref={ref}
       role="radio"
       tabIndex={disabled ? -1 : undefined}
+      title={title}
       type="button"
     >
       {checked ? <StarFilled /> : <Star />}

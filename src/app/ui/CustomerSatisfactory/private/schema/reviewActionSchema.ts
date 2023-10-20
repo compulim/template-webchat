@@ -1,4 +1,16 @@
-import { enumType, number, optional, string, union, url } from 'valibot';
+import {
+  array,
+  ArraySchema,
+  enumType,
+  length,
+  number,
+  optional,
+  Output,
+  string,
+  StringSchema,
+  union,
+  url
+} from 'valibot';
 
 import { ActionStatusType } from '../../../../external/OrgSchema/ActionStatusType';
 import exactString from './exactString';
@@ -23,6 +35,22 @@ const reviewActionSchema = thing('ReviewAction', {
     thing('Review', {
       reviewRating: optional(
         thing('Rating', {
+          description: optional(
+            array(
+              string(),
+              `"resultReview.reviewRating.description" must be an array with 5 elements of type "string"`,
+              [length(5)]
+            ) as ArraySchema<
+              StringSchema,
+              [
+                Output<StringSchema>,
+                Output<StringSchema>,
+                Output<StringSchema>,
+                Output<StringSchema>,
+                Output<StringSchema>
+              ]
+            >
+          ),
           ratingValue: optional(number(`"resultReview.reviewRating.ratingValue" must be of type "number"`)),
           'ratingValue-input': optional(
             thing('PropertyValueSpecification', {

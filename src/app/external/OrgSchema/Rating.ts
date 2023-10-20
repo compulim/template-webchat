@@ -10,6 +10,9 @@ import { type WithInput } from './PropertyValueSpecification';
  */
 export type Rating = Thing<'Rating'> &
   WithInput<{
+    /** A description of the item. */
+    description?: [string, string, string, string, string] | undefined;
+
     /**
      * The rating for the content.
      *

@@ -134,7 +134,12 @@ const CustomerSatisfactory = ({ initialReviewAction }: Props) => {
           {initialReviewAction.description}
         </p>
         <RovingTabIndexComposer>
-          <StarBar disabled={submitted} onChange={setRating} rating={rating} />
+          <StarBar
+            disabled={submitted}
+            onChange={setRating}
+            rating={rating}
+            titles={initialReviewAction.resultReview?.reviewRating?.description}
+          />
         </RovingTabIndexComposer>
       </div>
       <button
